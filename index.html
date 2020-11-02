@@ -1,0 +1,153 @@
+<!--Build a conversational solution that enables customers to discover and order products-->
+<!doctype html>
+<html>
+    <head>
+       <title> Lowes Campus Conversational Bot</title>
+       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <script src="index.js"></script>
+        <div id="myData" style="overflow:auto;"></div>
+        <button onclick="a1()">Call</button>
+        <form id="my_form" action="javascript:void(0)" method="post">
+            <!--<h3>Form Title</h3>
+            <label style="font-size:20px;font-family:AR Destine;color:white;position:absolute;bottom:100px;background-color:black;border:4px solid white;padding:25px 15px;">Input any command you want to enter</label>-->
+            <input type="name" id="name0" class="text"  style="position:absolute;bottom:30px;width:70%;height:20px;left:15px;">
+            <img id="i1" src="mic.png" onclick="startDictation()" alt="mice" style="position:absolute;bottom:30px;right:15px;width:50px;height:50px;">
+            <!--<textarea id="message" class="text">
+            </textarea>-->
+            </form>
+            <div style="border:solid black 10px;height:80px;width:80px;">
+                <img src="mic.png" style="position:relative;height:50px;width:50px;"/>
+                <span style="position:relative;bottom:-10px;border:solid black 1px;left:0px;">It's MIKE</span>
+            </div>
+    <script>
+        var m=0;
+        var d1=[];
+        function a1()
+        {
+        fetch('http://localhost:3000/api/stuff/')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                for(var j=m;j<m+4;j++)
+                {
+                    d1.push(data[j]);
+                }
+                appendData(d1);
+                d1=[];
+                m+=4;
+            })
+            .catch(function (err) {
+                console.log('error: ' + err);
+            });
+        }
+        var t=250;
+        var left=100;
+        var p;
+        function appendData(data) {
+            console.log(data.length);
+            var mainContainer = document.getElementById("myData");
+            for (var i = 0; i < data.length; i++) {
+                var div = document.createElement("div");
+                div.setAttribute("style","border:solid black 10px;height:80px;width:80px;position:absolute;");
+                div.style.top=t+"px";
+                div.style.left=left+"px";
+                left=left+200;
+                if(left>window.innerWidth)
+                {
+                    t+=250;
+                    left=100;
+                }
+                
+                var br=document.createElement("br");
+                var span=document.createElement("span");
+                span.setAttribute("style","border:solid black 1px;");
+                span.innerHTML=data[i].title;
+                var img=document.createElement("img");
+                img.setAttribute("src",data[i].imageUrl);
+                img.setAttribute("style","position:relative;height:50px;width:50px;");
+                var but=document.createElement("button");
+                p=data[i];
+                but.setAttribute("onclick","f1(p)");
+                but.setAttribute("style","position:releative;top:0px;left:70px;");
+                but.innerHTML="+";
+                console.log(data[i].imageUrl);
+                //div.innerHTML = 'Name: ' + data[i]._id + '<br>' + data[i].title;
+                div.appendChild(img);
+                div.appendChild(span);
+                div.appendChild(but);
+                document.body.appendChild(div);
+                //mainContainer.appendChild(br); 
+                //    al=pushanyOther Element.pop.priorityqueue.stack.enqueue.deq
+            }
+        }
+        var add=[]
+        function f1(data)
+        {
+            add.push(data);
+            localStorage.setitem("data",JSON.stringify(add));
+        }
+        function startDictation() {
+
+        if (window.hasOwnProperty('webkitSpeechRecognition')) {
+
+        var recognition = new webkitSpeechRecognition()||new SpeechRecognition;
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.lang = "en-US";
+        recognition.start();
+
+        recognition.onresult = function(e) {
+            //infinite loop
+            document.getElementById('name'+0).value
+                                    = e.results[0][0].transcript;
+            recognition.stop();
+            document.getElementById('my_form').submit();
+            //condition using a counter
+            
+        };
+        recognition.onsoundend=function(e)
+        {
+            console.log("Stopped");
+            recognition.stop();
+            
+        }
+        recognition.onerror = function(e) {
+            recognition.stop();
+        }
+
+        }
+        window.setTimeout(function(){speak();},2000);
+        }
+        function speak()
+  
+        {
+            var y=document.getElementById("name0").value;
+            y=y.toLowerCase();
+
+            if(y=="discover")
+            {
+                a1();
+            }
+            else if(y=="order")
+            {
+                document.getElementById("b1").style.display="block";
+            }
+            else{
+            var u = new SpeechSynthesisUtterance();
+        var x=document.getElementById("name0");
+            x.value="Here is all the educational info";
+        u.text = x.value;
+            u.lang = 'en-US';
+        document.getElementById("name0").value=y;
+        
+        speechSynthesis.speak(u);
+            }
+        }
+    </script>
+    </body>
+</html>
